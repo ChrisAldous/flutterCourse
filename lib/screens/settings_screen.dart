@@ -63,8 +63,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> getSettings() async {
     final SPHelper helper = SPHelper();
     Map<String, String> settings = await helper.getSettings();
-    _selectedImage = settings['image'] ?? 'Beach';
-    txtName.text = settings['name'] ?? '';
-    setState(() {});
+
+    final String loadedImage = settings['image'] ?? 'Beach';
+
+    setState(() {
+      _selectedImage = _images.contains(loadedImage) ? loadedImage : 'Beach'; // This is to safeguard against null values or invalid values.
+      txtName.text = settings['name'] ?? '';
+    });
   }
 }
