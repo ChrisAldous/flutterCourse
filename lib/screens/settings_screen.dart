@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:airplane_prac/data/sp_helper.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -11,6 +12,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final TextEditingController txtName = TextEditingController();
   final List<String> _images = ['Beach', 'Forest', 'Lake', 'Mountain'];
   String _selectedImage = 'Beach';
+
+  @override
+  void initState() {
+    super.initState();
+    getSettings();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +38,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 return DropdownMenuItem(value: value, child: Text(value));
               }).toList(),
               onChanged: (newvalue) {
-                _selectedImage = newvalue ?? 'Beach';
+                setState(() {
+                  _selectedImage = newvalue ?? 'Beach';
+                });
               },
             ),
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          saveSettings();
+        },
+        child: const Icon(Icons.save),
+      ),
     );
+  }
+
+  Future saveSettings() async {
+    final SPHelper helper = SPHelper();
+    await helper.setSettings(txtName.text, _selectedImage);
+  }
+
+  Future<void> getSettings() async {
+    final SPHelper helper = SPHelper();
+    Map<String, String> settings = await helper.getSettings();
+    _selectedImage = settings['image'] ?? 'Beach';
+    txtName.text = settings['name'] ?? '';
+    setState(() {});
   }
 }

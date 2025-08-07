@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SpHelper {
+class SPHelper {
   static const keyName = 'name';
   static const keyImage = 'image';
 
@@ -18,8 +17,8 @@ class SpHelper {
 
   Future<Map<String, String>> getSettings() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String name = await prefs.getString(keyName) ?? '';
-    final String image = await prefs.getString(keyImage) ?? '';
+    final String name = prefs.getString(keyName) ?? '';
+    final String image = prefs.getString(keyImage) ?? '';
     try {
       return {keyName: name, keyImage: image};
     } on Exception catch (_) {
