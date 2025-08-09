@@ -1,8 +1,30 @@
+import 'package:airplane_prac/data/sp_helper.dart';
 import 'package:airplane_prac/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 
-class IntroScreen extends StatelessWidget {
+class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
+
+  @override
+  State<IntroScreen> createState() => _IntroScreenState();
+}
+
+class _IntroScreenState extends State<IntroScreen> {
+  String name = '';
+  String image = 'Beach';
+
+  @override
+  void initState() {
+    super.initState();
+    final SPHelper helper = SPHelper();
+    helper.getSettings().then((settings) {
+      setState(() {
+        name = settings['name'] ?? ''; //Unlike in the tutorial, had to move the setState inside of the then callback
+        image = settings['image'] ?? 'Beach'; // due to the setState being called before the getSettings() could finish.
+      });
+      
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,13 +32,13 @@ class IntroScreen extends StatelessWidget {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset("assets/Beach.jpg", fit: BoxFit.cover),
+            child: Image.asset("assets/$image.jpg", fit: BoxFit.cover),
           ),
           Align(
             alignment: Alignment(0, -0.5),
-            child: const Text(
-              "Welcome",
-              style: TextStyle(
+            child: Text(
+              "Welcome $name",
+              style: const TextStyle(
                 color: Colors.white,
                 shadows: [
                   Shadow(
@@ -33,8 +55,10 @@ class IntroScreen extends StatelessWidget {
             alignment: Alignment(0, 0.5),
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (BuildContext context) => const SettingsScreen())
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const SettingsScreen(),
+                  ),
                 );
               },
               child: const Text("Select"),

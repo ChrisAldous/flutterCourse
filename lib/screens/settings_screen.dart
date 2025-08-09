@@ -48,16 +48,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          saveSettings();
+          saveSettings().then((value) {
+            String message = value
+                ? "Successfully saved"
+                : "Error: Not able to save";
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(message),
+                duration: const Duration(seconds: 3),));
+          });
         },
         child: const Icon(Icons.save),
       ),
     );
   }
 
-  Future saveSettings() async {
+  Future<bool> saveSettings() async {
     final SPHelper helper = SPHelper();
-    await helper.setSettings(txtName.text, _selectedImage);
+    return await helper.setSettings(txtName.text, _selectedImage);
   }
 
   Future<void> getSettings() async {
@@ -67,7 +75,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final String loadedImage = settings['image'] ?? 'Beach';
 
     setState(() {
-      _selectedImage = _images.contains(loadedImage) ? loadedImage : 'Beach'; // This is to safeguard against null values or invalid values.
+      _selectedImage = _images.contains(loadedImage)
+          ? loadedImage
+          : 'Beach'; // This is to safeguard against null values or invalid values.
       txtName.text = settings['name'] ?? '';
     });
   }
