@@ -1,4 +1,5 @@
 import 'package:airplane_prac/data/sp_helper.dart';
+import 'package:airplane_prac/screens/quote_screen.dart';
 import 'package:airplane_prac/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -57,7 +58,7 @@ class _IntroScreenState extends State<IntroScreen> {
               onPressed: () {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (BuildContext context) => const SettingsScreen(),
+                    builder: (BuildContext context) => const QuoteScreen(),
                   ),
                 );
               },
