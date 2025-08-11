@@ -12,6 +12,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final TextEditingController txtName = TextEditingController();
   final List<String> _images = ['Beach', 'Forest', 'Lake', 'Mountain'];
   String _selectedImage = 'Beach';
+  final SPHelper helper = SPHelper();
 
   @override
   void initState() {
@@ -55,7 +56,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(message),
-                duration: const Duration(seconds: 3),));
+                duration: const Duration(seconds: 3),
+              ),
+            );
           });
         },
         child: const Icon(Icons.save),
@@ -64,12 +67,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<bool> saveSettings() async {
-    final SPHelper helper = SPHelper();
     return await helper.setSettings(txtName.text, _selectedImage);
   }
 
   Future<void> getSettings() async {
-    final SPHelper helper = SPHelper();
     Map<String, String> settings = await helper.getSettings();
 
     final String loadedImage = settings['image'] ?? 'Beach';
@@ -80,5 +81,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           : 'Beach'; // This is to safeguard against null values or invalid values.
       txtName.text = settings['name'] ?? '';
     });
+  }
+
+  @override
+  void dispose() {
+    txtName.dispose();
+    super.dispose();
   }
 }
