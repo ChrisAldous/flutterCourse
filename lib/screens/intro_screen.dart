@@ -22,6 +22,7 @@ class _IntroScreenState extends State<IntroScreen> {
       setState(() {
         name = settings['name'] ?? ''; //Unlike in the tutorial, had to move the setState inside of the then callback
         image = settings['image'] ?? 'Beach'; // due to the setState being called before the getSettings() could finish.
+        if(image == '') image = 'Beach';
       });
       
     });

@@ -79,6 +79,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _selectedImage = _images.contains(loadedImage)
           ? loadedImage
           : 'Beach'; // This is to safeguard against null values or invalid values.
+      if (_selectedImage == '') _selectedImage = 'Beach';
       txtName.text = settings['name'] ?? '';
     });
   }
