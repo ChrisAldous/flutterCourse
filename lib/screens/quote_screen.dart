@@ -33,12 +33,14 @@ class _QuoteScreenState extends State<QuoteScreen> {
           IconButton(onPressed: _goToSettings, icon: Icon(Icons.settings)),
           IconButton(
             onPressed: () {
-              _fetchQuote().then((value) {
-                setState(() {
-                  quote = value;
-                });
+              // _fetchQuote().then((value) {
+              //   setState(() {
+              //     quote = value;
+              //   });
+              // });
+              setState(() {
+                _fetchQuote();
               });
-              // _fetchQuote();
             },
             icon: Icon(Icons.refresh),
           ),
@@ -86,10 +88,13 @@ class _QuoteScreenState extends State<QuoteScreen> {
   Future _fetchQuote() async {
     final Uri url = Uri.parse(address);
     final response = await http.get(url);
+    print(response.statusCode);
     if (response.statusCode == 200) {
       final List quoteJson = json.decode(response.body);
       Quote quote = Quote.fromJSON(quoteJson[0]);
       return quote;
+    } else if (response.statusCode == 429) {
+      return Quote(text: "To many refreshes, please try again later", author: '');
     } else {
       return Quote(text: "Error retrieving quote", author: '');
     }
