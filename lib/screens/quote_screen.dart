@@ -1,3 +1,4 @@
+import 'package:airplane_prac/data/db_helper.dart';
 import 'package:airplane_prac/data/quote.dart';
 import 'package:airplane_prac/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -33,11 +34,6 @@ class _QuoteScreenState extends State<QuoteScreen> {
           IconButton(onPressed: _goToSettings, icon: Icon(Icons.settings)),
           IconButton(
             onPressed: () {
-              // _fetchQuote().then((value) {
-              //   setState(() {
-              //     quote = value;
-              //   });
-              // });
               setState(() {
                 _fetchQuote();
               });
@@ -82,6 +78,20 @@ class _QuoteScreenState extends State<QuoteScreen> {
           }
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.save),
+        onPressed: () {
+          DbHelper helper = DbHelper();
+          helper.insertQuote(quote).then((id) {
+            final message = (id == 0)
+                ? 'Error, could not save the quote'
+                : 'Quote saved successfully';
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message), duration: Duration(seconds: 3)),
+            );
+          });
+        },
+      ),
     );
   }
 
@@ -94,7 +104,10 @@ class _QuoteScreenState extends State<QuoteScreen> {
       Quote quote = Quote.fromJSON(quoteJson[0]);
       return quote;
     } else if (response.statusCode == 429) {
-      return Quote(text: "To many refreshes, please try again later", author: '');
+      return Quote(
+        text: "To many refreshes, please try again later",
+        author: '',
+      );
     } else {
       return Quote(text: "Error retrieving quote", author: '');
     }

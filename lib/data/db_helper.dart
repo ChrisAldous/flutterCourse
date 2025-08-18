@@ -7,7 +7,7 @@ import 'quote.dart';
 class DbHelper {
   DatabaseFactory dbFactory = databaseFactoryIo;
   Database? db;
-  final store = intMapStoreFactory.store('quotes');
+  final store = intMapStoreFactory.store('quotes'); //Creates a store(table), similar to a folder in a file, to store data into.
 
   Future<Database> _openDb() async {
     final docsPath = await getApplicationDocumentsDirectory();
