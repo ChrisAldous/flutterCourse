@@ -12,7 +12,7 @@ class QuoteListScreen extends StatelessWidget {
       body: FutureBuilder(
         future: getQuotes(),
         builder: (context, snapshot) {
-          List<ListTile> listTile = [];
+          List<Dismissible> listTile = [];
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasData) {
@@ -23,9 +23,16 @@ class QuoteListScreen extends StatelessWidget {
               for (Quote quote in quote) {
                 print(quote.text);
                 listTile.add(
-                  ListTile(
-                    title: Text(quote.text),
-                    subtitle: Text(quote.author),
+                  Dismissible(
+                    key: Key(quote.id.toString()),
+                    onDismissed: (_) {
+                      DbHelper helper = DbHelper();
+                      helper.deleteQuote(quote.id!);
+                    },
+                    child: ListTile(
+                      title: Text(quote.text),
+                      subtitle: Text(quote.author),
+                    ),
                   ),
                 );
               }
