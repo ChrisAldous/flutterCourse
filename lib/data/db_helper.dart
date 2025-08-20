@@ -11,6 +11,19 @@ class DbHelper {
     'quotes',
   ); //Creates a store(table), similar to a folder in a file, to store data into.
 
+  static final DbHelper _instance = DbHelper._internal();
+
+  DbHelper._internal();
+
+  factory DbHelper() {
+    return _instance;
+  }
+
+  Future<Database> get _database async {
+    db ??= await _openDb();
+    return db!;
+  }
+
   Future<Database> _openDb() async {
     final docsPath = await getApplicationDocumentsDirectory();
     final dbPath = join(docsPath.path, 'quotes.db');
@@ -20,7 +33,7 @@ class DbHelper {
 
   Future<int> insertQuote(Quote quote) async {
     try {
-      Database db = await _openDb();
+      Database db = await _database;
       int id = await store.add(db, quote.toMap());
       return id;
     } on Exception catch (e) {
@@ -29,7 +42,7 @@ class DbHelper {
   }
 
   Future<List<Quote>> getQuotes() async {
-    Database db = await _openDb();
+    Database db = await _database;
     final finder = Finder(sortOrders: [SortOrder('q')]);
     final quotesSnapShot = await store.find(db, finder: finder);
     print('Fetched ${quotesSnapShot.length} quotes from DB');
@@ -41,14 +54,14 @@ class DbHelper {
   }
 
   Future<void> clearQuoteDB() async {
-    Database db = await _openDb();
+    Database db = await _database;
     await store.delete(db);
     print("all quotes deleted");
   }
 
   Future<bool> deleteQuote(int id) async {
     try {
-      Database db = await _openDb();
+      Database db = await _database;
       await store.record(id).delete(db);
       return true;
     } on Exception catch (e) {
