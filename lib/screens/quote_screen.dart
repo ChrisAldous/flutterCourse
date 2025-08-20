@@ -1,5 +1,6 @@
 import 'package:airplane_prac/data/db_helper.dart';
 import 'package:airplane_prac/data/quote.dart';
+import 'package:airplane_prac/screens/quote_list_screen.dart';
 import 'package:airplane_prac/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -32,6 +33,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
         title: Text("Quote of the day"),
         actions: [
           IconButton(onPressed: _goToSettings, icon: Icon(Icons.settings)),
+          IconButton(onPressed: _goToQuotes, icon: Icon(Icons.favorite)),
           IconButton(
             onPressed: () {
               setState(() {
@@ -50,7 +52,8 @@ class _QuoteScreenState extends State<QuoteScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            Quote quote = snapshot.data!;
+            quote = snapshot.data!;
+            print("${quote.text} <= text on screen");
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -80,22 +83,27 @@ class _QuoteScreenState extends State<QuoteScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.save),
-        onPressed: () {
-          DbHelper helper = DbHelper();
-          helper.insertQuote(quote).then((id) {
-            final message = (id == 0)
+        onPressed: () async {
+          // final quote = await _fetchQuote();
+          // print("This is my quote when I click save ${quote.text}");
+          if(quote.author != '') {
+            DbHelper helper = DbHelper();
+            helper.insertQuote(quote).then((id) {
+              print('${quote.text} <= this is the text');
+              final message = (id == 0)
                 ? 'Error, could not save the quote'
                 : 'Quote saved successfully';
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message), duration: Duration(seconds: 3)),
-            );
-          });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), duration: Duration(seconds: 3)),
+              );
+            });
+          }
         },
       ),
     );
   }
 
-  Future _fetchQuote() async {
+  Future<Quote> _fetchQuote() async {
     final Uri url = Uri.parse(address);
     final response = await http.get(url);
     print(response.statusCode);
@@ -117,6 +125,13 @@ class _QuoteScreenState extends State<QuoteScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SettingsScreen()),
+    );
+  }
+
+  void _goToQuotes() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const QuoteListScreen()),
     );
   }
 }

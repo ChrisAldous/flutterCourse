@@ -7,7 +7,9 @@ import 'quote.dart';
 class DbHelper {
   DatabaseFactory dbFactory = databaseFactoryIo;
   Database? db;
-  final store = intMapStoreFactory.store('quotes'); //Creates a store(table), similar to a folder in a file, to store data into.
+  final store = intMapStoreFactory.store(
+    'quotes',
+  ); //Creates a store(table), similar to a folder in a file, to store data into.
 
   Future<Database> _openDb() async {
     final docsPath = await getApplicationDocumentsDirectory();
@@ -30,10 +32,17 @@ class DbHelper {
     Database db = await _openDb();
     final finder = Finder(sortOrders: [SortOrder('q')]);
     final quotesSnapShot = await store.find(db, finder: finder);
+    print('Fetched ${quotesSnapShot.length} quotes from DB');
     return quotesSnapShot.map((item) {
       final quote = Quote.fromJSON(item.value);
       quote.id = item.key;
       return quote;
     }).toList();
+  }
+
+  Future<void> clearQuoteDB() async {
+    Database db = await _openDb();
+    await store.delete(db);
+    print("all quotes deleted");
   }
 }
